@@ -4,7 +4,7 @@ from color_detection import color_detector
 from constants import STICKER_CONTOUR_COLOR, STICKER_AREA_TILE_SIZE, STICKER_AREA_TILE_GAP, STICKER_AREA_OFFSET
 
 # constants
-WIDTH = 480
+WIDTH = 200
 HEIGHT = 480
 
 # global variables
@@ -16,7 +16,7 @@ average_sticker_colors = {}
 
 # functions
 def increase_brightness(img):
-    brightness = 50
+    brightness = -10
     contrast = 50
     img = np.int16(img)
     img = img * (contrast/127+1) - contrast + brightness
@@ -202,11 +202,13 @@ def update_preview_state(frame, contours):
 
 #### read image
 # frame = cv2.imread('./dataset/Frame_Front.jpg')
-frame = cv2.imread('./dataset/Frame_Back.jpg')
+# frame = cv2.imread('./dataset/Frame_Back.jpg')
 # frame = cv2.imread('./dataset/Frame_Up.jpg')
 # frame = cv2.imread('./dataset/Frame_Down.jpg')
 # frame = cv2.imread('./dataset/Frame_Left.jpg')
 # frame = cv2.imread('./dataset/Frame_Right.jpg')
+frame = cv2.imread('./dataset/res_3.jpg')
+frame = cv2.resize(frame,(WIDTH,WIDTH),interpolation=cv2.INTER_BITS)
 
 org_img = frame
 
