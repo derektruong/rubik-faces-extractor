@@ -29,11 +29,16 @@ def frame_detect(frame):
             return     
 
         classId, score, box = classIds[0], scores[0], boxes[0]
-        print(box)
+        
+        
+        # crop image
+        expand_size = 10
+        x, y, w, h = box[0]-expand_size, box[1]-expand_size, box[2]+expand_size*2, box[3]+expand_size*2
+        
         cv2.rectangle(
             frame,
-            (box[0], box[1]),
-            (box[0] + box[2], box[1] + box[3]),
+            (x, y),
+            (x + w, y + h),
             color=(0, 255, 0),
             thickness = 2
         )
@@ -42,15 +47,14 @@ def frame_detect(frame):
         
         cv2.putText(
             frame, text,
-            (box[0], box[1] - 5),
+            (x, y - 5),
             cv2.FONT_HERSHEY_SIMPLEX,
             1,
             color = (0, 255, 0),
             thickness = 2
         )
         
-        # crop image
-        crop_img = frame[box[1] : box[1] + box[3], box[0] : box[0] + box[2]]
+        crop_img = frame[y : y + h, x : x + w]
         cv2.imwrite(f"./output/Frame_{current_face[face_index]}.jpg", crop_img)
         
         face_index += 1
@@ -64,7 +68,7 @@ def detector():
     global current_face
 
     vid = cv2.VideoCapture(0)
-    vid. set(cv2.CAP_PROP_FPS, 30)
+    # vid. set(cv2.CAP_PROP_FPS, 30)
     
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter('./output/output.avi',fourcc, 30, (1280,720))
