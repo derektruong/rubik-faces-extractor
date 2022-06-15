@@ -10,15 +10,6 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 # Colors
 COLOR_PLACEHOLDER = (150, 150, 150)
 
-# i18n
-LOCALES = {
-    'de': 'Deutsch',
-    'hu': 'Hungarian',
-    'fr': 'French',
-    'en': 'English',
-    'nl': 'Nederlands',
-    'zh': '简体中文',
-}
 
 # Camera interface
 MINI_STICKER_AREA_TILE_SIZE = 14
