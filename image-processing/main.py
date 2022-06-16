@@ -32,7 +32,7 @@ def find_contours(dilatedFrame):
                 ratio = w / float(h)
 
                 # Check if contour is close to a square.
-                if ratio >= 0.3 and ratio <= 1.7 and w >= 20 and w <= 100 and area / (w * h) > 0.1:
+                if ratio >= 0.3 and ratio <= 1.5 and w >= 20 and w <= 100 and area / (w * h) > 0.4:
                     final_contours.append((x, y, w, h))
 
         # Return early if we didn't found 9 or more contours.
@@ -88,6 +88,13 @@ def find_contours(dilatedFrame):
 
             for neighbor in final_contours:
                 (x2, y2, w2, h2) = neighbor
+                cv2.rectangle(
+                    dilatedFrame,
+                    (x2, y2),
+                    (x2 + w2, y2 + h2),
+                    color=(0, 255, 0),
+                    thickness = 2
+                )
                 for (x3, y3) in neighbor_positions:
                     # The neighbor_positions are located in the center of each
                     # contour instead of top-left corner.
@@ -101,6 +108,7 @@ def find_contours(dilatedFrame):
         # across it, then the 'neighbors' are actually all the contours we're
         # looking for.
         for (contour, neighbors) in contour_neighbors.items():
+            print(len(neighbors))
             if len(neighbors) == 9:
                 found = True
                 final_contours = neighbors
@@ -193,7 +201,7 @@ def update_preview_state(frame, contours):
 
 def increase_brightness(img):
     brightness = 30
-    contrast = 20
+    contrast = 60
     img = np.int16(img)
     img = img * (contrast/127+1) - contrast + brightness
     img = np.clip(img, 0, 255)
@@ -201,14 +209,14 @@ def increase_brightness(img):
     return img
 
 #### read image
-#frame = cv2.imread('./dataset/Frame_Front.jpg')
-#frame = cv2.imread('./dataset/Frame_Back.jpg')
-#frame = cv2.imread('./dataset/Frame_Up.jpg')
-#frame = cv2.imread('./dataset/Frame_Down.jpg')
-#frame = cv2.imread('./dataset/Frame_Left.jpg')
+# frame = cv2.imread('./dataset/Frame_Front.jpg')
+# frame = cv2.imread('./dataset/Frame_Back.jpg')
+# frame = cv2.imread('./dataset/Frame_Up.jpg')
+# frame = cv2.imread('./dataset/Frame_Down.jpg')
+# frame = cv2.imread('./dataset/Frame_Left.jpg')
 frame = cv2.imread('./dataset/Frame_Right.jpg')
-# frame = cv2.imread('./dataset/res_3.jpg')
-frame = cv2.resize(frame,(200,200),interpolation=cv2.INTER_BITS)
+frame = cv2.resize(frame,(250,300),interpolation=cv2.INTER_BITS)
+# frame = cv2.resize(frame,(200,250),interpolation=cv2.INTER_BITS)
 
 org_img = frame
 

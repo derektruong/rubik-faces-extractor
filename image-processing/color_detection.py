@@ -7,18 +7,9 @@ from constants import CUBE_PALETTE, COLOR_PLACEHOLDER
 class ColorDetection:
 
     def __init__(self):
-        # self.prominent_color_palette = {
-        #     'red'   : (0, 0, 255),
-        #     'orange': (0, 165, 255),
-        #     'blue'  : (255, 0, 0),
-        #     'green' : (0, 255, 0),
-        #     'white' : (255, 255, 255),
-        #     'yellow': (0, 255, 255)
-        # }
-        
         self.prominent_color_palette = {
-            'red'   : (0, 0, 145),
-            'orange': (0, 100, 255),
+            'red'   : (15, 0, 145),
+            'orange': (0, 125, 255),
             'blue'  : (255, 0, 0),
             'green' : (0, 255, 0),
             'white' : (255, 255, 255),
@@ -74,6 +65,11 @@ class ColorDetection:
                 'distance': ciede2000(lab, bgr2lab(color_bgr))
             })
         closest = min(distances, key=lambda item: item['distance'])
+        
+        if closest["color_name"] == "orange" and closest["distance"] > 15:
+            closest["color_name"] = "red"
+            closest["color_bgr"] = self.cube_color_palette["red"]
+        
         return closest
 
     def convert_bgr_to_notation(self, bgr):
