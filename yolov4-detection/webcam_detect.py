@@ -63,7 +63,6 @@ def frame_detect(frame):
         detected_state = 1
     except Exception as err:
         print(err)
-        print("hehe")
     
 def detector():
     global detected_state

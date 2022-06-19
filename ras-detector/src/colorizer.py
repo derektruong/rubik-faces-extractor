@@ -32,11 +32,11 @@ class Colorizer:
                 if ratio >= 0.6 and ratio <= 1.4 and w >= 25 and w <= 70 and area / (w * h) > 0.5:
                     final_contours.append((x, y, w, h))
 
-        # Return early if we didn't found 9 or more contours.
-        if len(final_contours) < 9:
+        # Return early if we didn't found 8 or more contours.
+        if len(final_contours) < 8:
             return []
 
-        # Step 2/4: Find the contour that has 9 neighbors (including itself)
+        # Step 2/4: Find the contour that has 8 neighbors (including itself)
         # and return all of those neighbors.
         found = False
         contour_neighbors = {}
@@ -47,7 +47,7 @@ class Colorizer:
             center_y = y + h / 2
             radius = 1.5
 
-            # Create 9 positions for the current contour which are the
+            # Create 8 positions for the current contour which are the
             # neighbors. We'll use this to check how many neighbors each contour
             # has. The only way all of these can match is if the current contour
             # is the center of the cube. If we found the center, we also know
@@ -68,7 +68,7 @@ class Colorizer:
                 [(center_x - w * radius), center_y],
 
                 # center
-                [center_x, center_y],
+                # [center_x, center_y],
 
                 # middle right
                 [(center_x + w * radius), center_y],
@@ -100,12 +100,12 @@ class Colorizer:
                         contour_neighbors[index].append(neighbor)
 
         # Step 3/4: Now that we know how many neighbors all contours have, we'll
-        # loop over them and find the contour that has 9 neighbors, which
+        # loop over them and find the contour that has 8 neighbors, which
         # includes it This is the center piece of the cube. If we come
         # across it, then the 'neighbors' are actually all the contours we're
         # looking for.
         for (contour, neighbors) in contour_neighbors.items():
-            if len(neighbors) == 9:
+            if len(neighbors) == 8:
                 found = True
                 final_contours = neighbors
                 break
@@ -122,8 +122,8 @@ class Colorizer:
 
         # Split into 3 rows and sort each row on the x-value.
         top_row = sorted(y_sorted[0:3], key=lambda item: item[0])
-        middle_row = sorted(y_sorted[3:6], key=lambda item: item[0])
-        bottom_row = sorted(y_sorted[6:9], key=lambda item: item[0])
+        middle_row = sorted(y_sorted[3:5], key=lambda item: item[0])
+        bottom_row = sorted(y_sorted[5:8], key=lambda item: item[0])
 
         sorted_contours = top_row + middle_row + bottom_row
         return sorted_contours
@@ -142,6 +142,7 @@ class Colorizer:
         index = -1
         for row in range(3):
             for col in range(3):
+                if row == 1 and col == 1: continue
                 index += 1
                 x1 = (offset_x + STICKER_AREA_TILE_SIZE * col) + STICKER_AREA_TILE_GAP * col
                 y1 = (offset_y + STICKER_AREA_TILE_SIZE * row) + STICKER_AREA_TILE_GAP * row
@@ -253,7 +254,7 @@ class Colorizer:
 
         contours = self.find_contours(dilatedFrame)
         is_success = False
-        if len(contours) == 9:
+        if len(contours) == 8:
             self.draw_contours(frame, contours)
             self.update_preview_state(frame, contours)
             self.draw_preview_stickers(frame)
