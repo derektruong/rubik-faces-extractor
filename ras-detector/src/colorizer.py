@@ -20,6 +20,7 @@ class Colorizer:
         for contour in contours:
             perimeter = cv2.arcLength(contour, True)
             approx = cv2.approxPolyDP(contour, 0.1 * perimeter, True)
+            
             if len (approx) == 4:
                 area = cv2.contourArea(contour)
                 (x, y, w, h) = cv2.boundingRect(approx)
@@ -192,17 +193,6 @@ class Colorizer:
                 self.average_sticker_colors[index].append(closest_color)
             else:
                 self.average_sticker_colors[index] = [closest_color]
-                
-    def increase_brightness(self, img):
-        # brightness = 30
-        # contrast = 60
-        brightness = -40
-        contrast = 40
-        img = np.int16(img)
-        img = img * (contrast/127+1) - contrast + brightness
-        img = np.clip(img, 0, 255)
-        img = np.uint8(img)
-        return img
     
     def automatic_brightness_and_contrast(self, image, clip_hist_percent=1):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -269,7 +259,8 @@ class Colorizer:
             self.draw_preview_stickers(frame)
             
             print(f"{current_face}: {self.mapping_color_name()}")
-            cv2.imshow("Show",frame)
+            cv2.imshow(f"{current_face}",frame)
+            cv2.moveWindow(f"{current_face}", 1000,300)
             is_success = True
         
         if not is_success:

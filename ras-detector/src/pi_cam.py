@@ -6,12 +6,6 @@ class PiCam:
     detected_state = 1
     face_index = 0
     current_face = ["Front", "Back", "Right", "Left", "Up", "Down"]
-
-    # Yolov4
-    # net = cv2.dnn.readNetFromDarknet(
-    #     "./detect_data/yolov4-custom.cfg",
-    #     "./detect_data/yolov4-custom_last.weights",
-    # )
     
     # Yolov4 tiny
     net = cv2.dnn.readNetFromDarknet(
@@ -43,7 +37,6 @@ class PiCam:
             
             # crop image
             expand_size = 0
-            # x, y, w, h = box[0]-expand_size, box[1], box[2]+expand_size*2, box[3]
             x, y, w, h = box[0]-expand_size, box[1]-expand_size, box[2]+expand_size*2, box[3]+expand_size*2
             
             cv2.rectangle(
@@ -80,16 +73,10 @@ class PiCam:
         vid = cv2.VideoCapture(0)
         vid. set(cv2.CAP_PROP_FPS, 60)
         
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        out = cv2.VideoWriter('./output/output.avi',fourcc, 30, (1280,720))
-        
         while True:
             ret, frame = vid.read()
             
             if ret == True:
-                b = cv2.resize(frame, (1280, 720), fx=0, fy=0, interpolation = cv2.INTER_CUBIC)
-                out.write(b)
-                
                 if (PiCam.detected_state == 0):
                     PiCam.frame_detect(frame)
                 
@@ -105,9 +92,6 @@ class PiCam:
                     )
 
                 cv2.imshow('frame', frame)
-                
-                if PiCam.face_index > 5:
-                    break
                 
                 if PiCam.face_index < 6 and cv2.waitKey(1) & 0xFF == ord('s'):
                     PiCam.detected_state = 0
