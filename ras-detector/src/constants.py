@@ -11,13 +11,12 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 COLOR_PLACEHOLDER = (150, 150, 150)
 
 COLOR_PALETTE = {
-	'red'   : (15, 0, 145),
-	'orange': (0, 125, 255),
-	'blue'  : (255, 0, 0),
-	'green' : (0, 255, 0),
+	'red'   : (25, 15, 115),
+	'orange': (40, 110, 250),
+	'blue'  : (255, 150, 0),
+	'green' : (0, 170, 0),
 	'white' : (255, 255, 255),
-	'yellow': (0, 255, 255),
-	'black': (0, 0, 0),
+    'yellow': (25, 225, 250),
 }
 
 

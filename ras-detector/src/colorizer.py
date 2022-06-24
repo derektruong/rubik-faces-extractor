@@ -24,19 +24,30 @@ class Colorizer:
             if len (approx) == 4:
                 area = cv2.contourArea(contour)
                 (x, y, w, h) = cv2.boundingRect(approx)
-
+                
                 # Find aspect ratio of boundary rectangle around the countours.
                 ratio = w / float(h)
 
                 # Check if contour is close to a square.
-                if ratio >= 0.6 and ratio <= 1.4 and w >= 25 and w <= 70 and area / (w * h) > 0.5:
+                if ratio >= 0.5 and ratio <= 1.5 and w >= 20 and w <= 130 and area / (w * h) > 0.2:
                     final_contours.append((x, y, w, h))
 
-        # Return early if we didn't found 9 or more contours.
+        # Return early if we didn't found 8 or more contours.
+        for neighbor in final_contours:
+                (x2, y2, w2, h2) = neighbor
+                cv2.rectangle(
+                    dilatedFrame,
+                    (x2, y2),
+                    (x2 + w2, y2 + h2),
+                    color=(0, 255, 0),
+                    thickness = 2
+                )
+        cv2.imshow("final_contours", dilatedFrame)
+        print(f"Number of contours: {len(final_contours)}")
         if len(final_contours) < 9:
             return []
 
-        # Step 2/4: Find the contour that has 9 neighbors (including itself)
+        # Step 2/4: Find the contour that has 8 neighbors (including itself)
         # and return all of those neighbors.
         found = False
         contour_neighbors = {}
@@ -45,9 +56,9 @@ class Colorizer:
             contour_neighbors[index] = []
             center_x = x + w / 2
             center_y = y + h / 2
-            radius = 1.5
+            radius = 1.2
 
-            # Create 9 positions for the current contour which are the
+            # Create 8 positions for the current contour which are the
             # neighbors. We'll use this to check how many neighbors each contour
             # has. The only way all of these can match is if the current contour
             # is the center of the cube. If we found the center, we also know
@@ -98,9 +109,9 @@ class Colorizer:
                     # logic: (top left < center pos) and (bottom right > center pos)
                     if (x2 < x3 and y2 < y3) and (x2 + w2 > x3 and y2 + h2 > y3):
                         contour_neighbors[index].append(neighbor)
-
+                   
         # Step 3/4: Now that we know how many neighbors all contours have, we'll
-        # loop over them and find the contour that has 9 neighbors, which
+        # loop over them and find the contour that has 8 neighbors, which
         # includes it This is the center piece of the cube. If we come
         # across it, then the 'neighbors' are actually all the contours we're
         # looking for.
@@ -109,6 +120,7 @@ class Colorizer:
                 found = True
                 final_contours = neighbors
                 break
+        
 
         if not found:
             return []
@@ -185,7 +197,7 @@ class Colorizer:
                 self.preview_state[index] = eval(most_common_color)
                 break
 
-            roi = frame[y+7:y+h-7, x+14:x+w-14]
+            roi = frame[y+2:y+h-2, x+4:x+w-4]
             avg_bgr = color_detector.get_dominant_color(roi)
             closest_color = color_detector.get_closest_color(avg_bgr)['color_bgr']
             self.preview_state[index] = closest_color
@@ -239,13 +251,44 @@ class Colorizer:
                 
         return results
     
-    def colorize(self, path, current_face):
-        frame = cv2.imread(path)
-        frame = cv2.resize(frame,(250,250),interpolation=cv2.INTER_BITS)
+    def colorize(self, frame, current_face):
+        #frame = cv2.imread(path)
+        frame = cv2.resize(frame,(210,210),interpolation=cv2.INTER_BITS)
         
-        frame, alpha, beta = self.automatic_brightness_and_contrast(frame)
+#         frame, alpha, beta = self.automatic_brightness_and_contrast(frame)
+        
+        p0 = 75, 140
+        p1 = 135, 75
+        
+        p2 = 0, 210
+        p3 = 210, 0
+        
+        cv2.rectangle(frame, p2, p3, (0, 0, 0), 8)
+        
+        cv2.rectangle(frame, p0, p1, (0, 0, 0), 5)
+        
+        if current_face == "Down":
+            cv2.rectangle(frame, p0, p1, COLOR_PALETTE["white"], cv2.FILLED)
+            
+        if current_face == "Front":
+            cv2.rectangle(frame, p0, p1, COLOR_PALETTE["orange"], cv2.FILLED)
+        
+        if current_face == "Up":
+            cv2.rectangle(frame, p0, p1, COLOR_PALETTE["yellow"], cv2.FILLED)
+            
+        if current_face == "Back":
+            cv2.rectangle(frame, p0, p1, COLOR_PALETTE["red"], cv2.FILLED)
+            
+        if current_face == "Right":
+            cv2.rectangle(frame, p0, p1, COLOR_PALETTE["blue"], cv2.FILLED)
+            
+        if current_face == "Left":
+            cv2.rectangle(frame, p0, p1, COLOR_PALETTE["green"], cv2.FILLED)
+            
+        cv2.imshow("color", frame)
         
         grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        
         blurredFrame = cv2.blur(grayFrame, (3, 3))
         cannyFrame = cv2.Canny(blurredFrame, 30, 60, 3)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
@@ -253,6 +296,7 @@ class Colorizer:
 
         contours = self.find_contours(dilatedFrame)
         is_success = False
+        result = dict()
         if len(contours) == 9:
             self.draw_contours(frame, contours)
             self.update_preview_state(frame, contours)
@@ -265,7 +309,12 @@ class Colorizer:
         
         if not is_success:
             print("Not detected, please try again!")
-            return False
-        return True
+            result['is_success'] = False
+            result['colors'] = []
+            return result
+        
+        result['is_success'] = True
+        result['colors'] = self.mapping_color_name()
+        return result
         
 colorizer = Colorizer()

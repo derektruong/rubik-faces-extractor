@@ -58,9 +58,15 @@ class ColorDetection:
             })
         closest = min(distances, key=lambda item: item['distance'])
         
-        if closest["color_name"] == "orange" and closest["distance"] > 20:
-            closest["color_name"] = "red"
-            closest["color_bgr"] = self.cube_color_palette["red"]
+#         print(closest["distance"])
+        
+            
+        if closest["color_name"] == "red" and closest["distance"] > 20:
+            closest["color_name"] = "orange"
+            closest["color_bgr"] = self.cube_color_palette["orange"]
+#         if closest["color_name"] == "green" and closest["distance"] > 25:
+#             closest["color_name"] = "yellow"
+#             closest["color_bgr"] = self.cube_color_palette["yellow"]
         
         return closest
 
