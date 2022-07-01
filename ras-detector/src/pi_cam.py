@@ -3,7 +3,7 @@ import serial
 import time
 from colorizer import colorizer
 from two_phase import solver
-import twophase.solver  as sv
+import twophase.solver as sv
 
 class PiCam:
     # class variables
@@ -94,11 +94,15 @@ class PiCam:
     @staticmethod
     def detector():
         final_result = {}
+        time.sleep(5)
         for index, face in enumerate(PiCam.current_face):
             if index != 0:
                 data = 'D' + str(PiCam.current_face[PiCam.face_index][0])
                 PiCam.ser.write(str.encode(data))
-                time.sleep(7)
+                if str(PiCam.current_face[PiCam.face_index][0]) == 'R' or  str(PiCam.current_face[PiCam.face_index][0]) == 'L':
+                    time.sleep(10)
+                else:
+                    time.sleep(5)
             
             isDetected = False
 #             frame = PiCam.takeOneFrame()
@@ -114,81 +118,7 @@ class PiCam:
                                                     final_result['Left'], final_result['Back'])
         print(resSolver[:-5])
         PiCam.ser.write(str.encode(resSolver[:-5]))
-            
-#             cv2.imshow(f'frame{index}', frame)
-#             cv2.waitKey()
-            
-#         
-#         ind = 0
-#         isSent = False
-#         PiCam.detected_state = 0
-#         while ind < 6:
-#             frame = PiCam.takeOneFrame(vid)
-#             cv2.imshow('frame', frame)
-#             isDetected = False 
-#             if ind == 0:
-#                 isDetected = PiCam.frame_detect(frame)
-#             elif ind > 0:
-#                 if not isSent:
-#                     data = 'D' + str(PiCam.current_face[PiCam.face_index][0])
-#                     PiCam.ser.write(str.encode(data))
-#                     time.sleep(10)
-#                 isSent = True
-#                 isDetected = PiCam.frame_detect(frame)
-#             
-#             if isDetected:
-#                 isSent = False
-#                 ind += 1
-#                 PiCam.detected_state = 0
-                
-            
-        
-#         while True:
-# #             time.sleep(5)
-#             ret, frame = vid.read()
-#             frame = cv2.resize(frame,(800,600))
-#             if ret == True:
-#                 isDetected = False
-#                 if (PiCam.detected_state == 0):
-#                     isDetected = PiCam.frame_detect(frame)
-#                     if not isDetected: continue
-#                 
-#                 PiCam.detected_state = 1
-#                 
-#                 if PiCam.face_index < 6:
-#                     if PiCam.face_index != 0:
-#                         data = 'D' + str(PiCam.current_face[PiCam.face_index][0])
-#                         PiCam.ser.write(str.encode(data))
-#                         time.sleep(5)
-# #                     data = 'D' + str(PiCam.current_face[PiCam.face_index][0])
-# #                     PiCam.ser.write(str.encode(data))
-#                     #print(data)
-#                     text = f"Show {PiCam.current_face[PiCam.face_index]} and press 's' to save the face"
-#                     cv2.putText(
-#                         frame, text,
-#                         (10, 30),
-#                         cv2.FONT_HERSHEY_SIMPLEX,
-#                         1,
-#                         color = (0, 255, 0),
-#                         thickness = 2
-#                     )
-#                     
-#                     PiCam.detected_state = 0
-#                     
-#                 
-#                 cv2.imshow('frame', frame)
-#                 
-# #                 if PiCam.face_index < 6 and cv2.waitKey(1) & 0xFF == ord('s'):
-# #                     PiCam.detected_state = 0
-# #                     
-#                 if PiCam.face_index >= 6: break    
-#                 
-#                 if cv2.waitKey(1) & 0xFF == ord('q'):
-#                     break
-#             
-#             else:
-#                 break
-            
+
         cv2.destroyAllWindows()
         
 pi_cam = PiCam()
